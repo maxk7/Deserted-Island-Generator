@@ -2,49 +2,58 @@ import java.awt.*;
 
 // TerrainGenerator class using OpenSimplex2S
 public class TerrainGenerator {
-    private long seed1;
-    private long seed2;
-    private long seed3;
+    private double shoreHeight = 0.40;
+    private int seed1;
+    private int seed2;
+    private int seed3;
 
-    private long distanceModifier;
+    private int distanceModifier;
 
-    public TerrainGenerator(long seed1, long seed2, long seed3) {
+    public TerrainGenerator(int seed1, int seed2, int seed3) {
         this.seed1 = seed1;
         this.seed2 = seed2;
         this.seed3 = seed3;
-        this.distanceModifier = 230;
+        this.distanceModifier = 25;
     }
 
-    public double getDistanceModifier() {
-        return distanceModifier;
-    }
-
-    public void setDistanceModifier(long distanceModifier) {
-        this.distanceModifier = distanceModifier;
-    }
-
-    public long getSeed1() {
+    public int getSeed1() {
         return seed1;
     }
 
-    public void setSeed1(long seed1) {
+    public void setSeed1(int seed1) {
         this.seed1 = seed1;
     }
 
-    public long getSeed2() {
+    public int getSeed2() {
         return seed2;
     }
 
-    public void setSeed2(long seed2) {
+    public void setSeed2(int seed2) {
         this.seed2 = seed2;
     }
 
-    public long getSeed3() {
+    public int getSeed3() {
         return seed3;
     }
 
-    public void setSeed3(long seed3) {
+    public void setSeed3(int seed3) {
         this.seed3 = seed3;
+    }
+
+    public int getDistanceModifier() {
+        return distanceModifier;
+    }
+
+    public void setDistanceModifier(int distanceModifier) {
+        this.distanceModifier = distanceModifier;
+    }
+
+    public void setShoreHeight(double shoreHeight) {
+        this.shoreHeight = shoreHeight;
+    }
+
+    public double getShoreHeight() {
+        return shoreHeight;
     }
 
     public int[][] generateTerrain(int width, int height) {
@@ -80,7 +89,7 @@ public class TerrainGenerator {
             return new Color(1, 92, 157).getRGB(); // Deep Ocean
         } else if (value < 0.3) {
             return new Color(0, 119, 182).getRGB(); // Ocean
-        } else if (value < 0.4) {
+        } else if (value < shoreHeight) {
             return new Color(189, 224, 254).getRGB(); // Shallow Ocean
         } else if (value < 0.48) {
             return new Color(255, 255, 204).getRGB(); // Sand

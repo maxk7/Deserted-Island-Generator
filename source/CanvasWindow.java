@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.event.ChangeEvent;
@@ -7,14 +9,12 @@ import javax.swing.event.ChangeListener;
 
 public class CanvasWindow extends JFrame {
     private final CanvasPanel canvasPanel;
-    private final JSlider seed1Slider;
-    private final JSlider seed2Slider;
-    private final JSlider seed3Slider;
-    private final JSlider distanceModifierSlider;
+
+    private double shoreTimer = 0;
 
     public CanvasWindow() {
         // Set the title of the window
-        setTitle("Terrain Generator");
+        setTitle("Deserted Island Generator");
 
         // Set the size of the window
         setSize(1200, 800);
@@ -38,12 +38,10 @@ public class CanvasWindow extends JFrame {
         layeredPane.add(canvasPanel, JLayeredPane.DEFAULT_LAYER);
 
         // Add sliders to the layered pane (upper layer)
-        seed1Slider = createSlider("Large Detail", 1, 333, (int) terrainGenerator.getSeed1());
-        seed2Slider = createSlider("Medium Detail", 1, 666, (int) terrainGenerator.getSeed2());
-        seed3Slider = createSlider("Fine Detail", 1, 1000, (int) terrainGenerator.getSeed3());
-        distanceModifierSlider = createSlider("Islandness", 1, 250, (int) terrainGenerator.getDistanceModifier());
-
-        distanceModifierSlider.setInverted(true);
+        JSlider seed1Slider = createSlider("Large Detail", 1, 333, (int) terrainGenerator.getSeed1());
+        JSlider seed2Slider = createSlider("Medium Detail", 1, 666, (int) terrainGenerator.getSeed2());
+        JSlider seed3Slider = createSlider("Fine Detail", 1, 1000, (int) terrainGenerator.getSeed3());
+        JSlider distanceModifierSlider = createSlider("Size", 1, 300, (int) terrainGenerator.getDistanceModifier());
 
         // Set the location of the sliders panel on the layered pane
         seed1Slider.setBounds(10, 10, 200, 50);
@@ -68,20 +66,6 @@ public class CanvasWindow extends JFrame {
         // Center the window on the screen
         setLocationRelativeTo(null);
 
-        // Add a key listener to generate new terrain when a key is pressed
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {}
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                canvasPanel.repaint();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {}
-        });
-
         // Make the window focusable to receive key events
         setFocusable(true);
 
@@ -90,6 +74,22 @@ public class CanvasWindow extends JFrame {
 
         // Request focus so that the window can receive key events
         requestFocus();
+
+        // Create a timer to animate the shore
+        Timer timer = new Timer(350, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the terrain
+                terrainGenerator.setShoreHeight(Math.sin(shoreTimer)/25 + 0.40);
+                shoreTimer += 0.025;
+
+                // Repaint the canvas
+                canvasPanel.repaint();
+            }
+        });
+
+        // Start the timer
+        timer.start();
     }
 
     private JSlider createSlider(String label, int min, int max, int value) {
@@ -110,20 +110,12 @@ public class CanvasWindow extends JFrame {
         @Override
         public void stateChanged(ChangeEvent e) {
             JSlider source = (JSlider) e.getSource();
-            long value = source.getValue();
+            int value = source.getValue();
             switch (sliderIndex) {
-                case 1:
-                    terrainGenerator.setSeed1(value);
-                    break;
-                case 2:
-                    terrainGenerator.setSeed2(value);
-                    break;
-                case 3:
-                    terrainGenerator.setSeed3(value);
-                    break;
-                case 4:
-                    terrainGenerator.setDistanceModifier(value);
-                    break;
+                case 1 -> terrainGenerator.setSeed1(value);
+                case 2 -> terrainGenerator.setSeed2(value);
+                case 3 -> terrainGenerator.setSeed3(value);
+                case 4 -> terrainGenerator.setDistanceModifier(value);
             }
             canvasPanel.repaint();
         }
@@ -155,12 +147,6 @@ public class CanvasWindow extends JFrame {
                     g.drawRect(x, y, 1, 1);
                 }
             }
-        }
-
-        @Override
-        public Dimension getPreferredSize() {
-            // Set a preferred size for the CanvasPanel
-            return new Dimension(800, 600); // Adjust the size as needed
         }
     }
 
