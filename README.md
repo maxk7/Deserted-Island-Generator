@@ -26,7 +26,7 @@ In this project, Perlin noise is employed to generate heightmaps, which are then
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/deserted-island-terrain-generator.git
+git clone https://github.com/maxk7/deserted-island-terrain-generator.git
 ```
 
 2. Navigate to the project directory:
